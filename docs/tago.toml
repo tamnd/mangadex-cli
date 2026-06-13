@@ -1,0 +1,10 @@
+title       = "mangadex"
+baseURL     = "https://mangadex-cli.tamnd.com/"
+description = "Browse MangaDex manga and chapters"
+contentDir  = "content"
+outputDir   = "public"
+theme       = "tago-doks"
+syntaxHighlight = "true"
+
+[params]
+github = "https://github.com/tamnd/mangadex-cli"
