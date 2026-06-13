@@ -46,7 +46,7 @@ type App struct {
 	cfg    mangadex.Config
 	client *mangadex.Client
 
-	format   string
+	output   string
 	fields   []string
 	noHeader bool
 	template string
@@ -75,7 +75,7 @@ or sponsored by MangaDex.`,
 	}
 
 	pf := root.PersistentFlags()
-	pf.StringVarP(&app.format, "format", "f", "", "output: table|json|jsonl|csv|tsv|url|raw (default: table on a TTY, jsonl when piped)")
+	pf.StringVarP(&app.output, "output", "o", "", "output: table|json|jsonl|csv|tsv|url|raw (default: table on a TTY, jsonl when piped)")
 	pf.StringSliceVar(&app.fields, "fields", nil, "comma-separated columns to include")
 	pf.BoolVar(&app.noHeader, "no-header", false, "omit the header row in table/csv/tsv")
 	pf.StringVar(&app.template, "template", "", "Go text/template applied per record")
@@ -99,22 +99,22 @@ or sponsored by MangaDex.`,
 }
 
 func (a *App) setup() error {
-	if a.format == "" {
+	if a.output == "" {
 		if isatty.IsTerminal(os.Stdout.Fd()) {
-			a.format = string(FormatTable)
+			a.output = string(FormatTable)
 		} else {
-			a.format = string(FormatJSONL)
+			a.output = string(FormatJSONL)
 		}
 	}
-	if !Format(a.format).Valid() {
-		return codeError(exitUsage, fmt.Errorf("unknown output format %q", a.format))
+	if !Format(a.output).Valid() {
+		return codeError(exitUsage, fmt.Errorf("unknown output format %q", a.output))
 	}
 	a.client = mangadex.NewClient(a.cfg)
 	return nil
 }
 
 func (a *App) render(records any) error {
-	r := NewRenderer(os.Stdout, Format(a.format), a.fields, a.noHeader, a.template)
+	r := NewRenderer(os.Stdout, Format(a.output), a.fields, a.noHeader, a.template)
 	return r.Render(records)
 }
 
